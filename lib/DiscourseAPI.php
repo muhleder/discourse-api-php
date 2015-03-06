@@ -268,16 +268,15 @@ class DiscourseAPI
      *
      * @param string $email     email of user
      *
-     * @return mixed HTTP return code and API return object
+     * @return mixed string or boolean
      */
 
     function getUsernameByEmail($email)
     {
-        $users = $this->_getRequest("/admin/users/list/active.json?filter=".urlencode($email));
-        foreach($users->apiresult as $user) {
-            if($user->email === $email) {
-                return $user->username;
-            }
+        $users = $this->_getRequest("/admin/users/list/active.json", array('filter' => $email));
+        if ($users->http_code === 200 && isset($users->apiresult) && count($users->apiresult) === 1) {
+            $user = array_pop($users->apiresult);
+            return $user->username;
         }
 	
         return false;
