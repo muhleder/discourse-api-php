@@ -313,6 +313,31 @@ class DiscourseAPI
         return $this->_getRequest("/admin/users/{$userName}.json");
     }
 
+
+    /**
+     * Update or create a Discourse user via SSO.
+     *
+     * @param $externalId
+     * @param $ssoSecret
+     * @param $paramArray
+     * array(
+     *  'username' => 'login_name',
+     *  'name' => 'Real Name',
+     *  'email' => 'a@example.com',
+     *  'avatar_url' => 'http://example.com/img.png'
+     * );
+     */
+
+    function syncSSO($externalId, $ssoSecret, $paramArray) {
+        $unsigned_payload = array(
+          'external_id' => $externalId
+        );
+        $unsigned_payload = array_merge($unsigned_payload, $paramArray);
+        $payload = base64_encode(http_build_query($unsigned_payload));
+        $sig = hash_hmac("sha256", $payload, $ssoSecret);
+        $this->_postRequest("/admin/users/sync_sso/", array('sso' => $payload, 'sig' => $sig));
+    }
+
     /**
      * createCategory
      *
