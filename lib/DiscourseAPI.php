@@ -135,6 +135,68 @@ class DiscourseAPI
         }
     }
 
+
+    /**
+     * addUserToGroup
+     *
+     * @param string $groupname    name of group
+     * @param string $username     user to add to the group
+     *
+     * @return mixed HTTP return code and API return object
+     */
+    function addUserToGroup($groupname, $username)
+    {
+        $groupId = $this->getGroupIdByGroupName($groupname);
+        if (!$groupId) {
+            $this->group($groupname, array($username));
+        } else {
+            $user = $this->getUserByUserName($username)->apiresult;
+            $params = array(
+                'group_id' => $groupId
+            );
+            return $this->_postRequest('/admin/users/' . $user->id . '/groups', $params);
+        }
+    }
+
+    /**
+     * removeUserFromGroup
+     *
+     * @param string $groupName        name of group
+     * @param int $userId         user id to remove from group
+     *
+     * @return mixed HTTP return code and API return object
+     */
+
+    function removeUserFromGroup($groupName, $username)
+    {
+        $user = $this->getUserByUsername($username)->apiresult;
+        $groupId = $this->getGroupIdByGroupName($groupName);
+        return $this->_deleteRequest('/admin/groups/' . $groupId . '/members.json', array('user_id' => $user->id));
+    }
+
+    /**
+     * getGroupIdByGroupName
+     *
+     * @param string $groupname    name of group
+     *
+     * @return mixed id of the group, or false if nonexistent
+     */
+    function getGroupIdByGroupName($groupname)
+    {
+        $obj = $this->getGroups();
+        if ($obj->http_code != 200) {
+            return false;
+        }
+        foreach($obj->apiresult as $group) {
+            if($group->name === $groupname) {
+                $groupId = intval($group->id);
+                break;
+            }
+            $groupId = false;
+        }
+        return $groupId;
+    }
+
     /**
      * getGroups
      *
