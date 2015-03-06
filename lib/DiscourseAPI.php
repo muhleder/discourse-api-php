@@ -282,6 +282,24 @@ class DiscourseAPI
         return false;
     }
 
+    /**
+     * getUsernameByExternalId
+     *
+	
+     * @param string $external_id     User id of user in external SSO provider
+     *
+     * @return mixed string or boolean
+     */
+
+    function getUsernameByExternalId($external_id) {
+        $user_search = $this->_getRequest('/users/by-external/' . $external_id . '.json');
+        if ($user_search->http_code === 200 && isset($user_search->apiresult)) {
+            return $user_search->apiresult->user->username;
+        } else {
+            return false;
+        }
+    }
+
      /**
      * getUserByUsername
      *
