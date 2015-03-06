@@ -310,7 +310,7 @@ class DiscourseAPI
 
     function getUserByUsername($userName)
     {
-        return $this->_getRequest("/users/{$userName}.json");
+        return $this->_getRequest("/admin/users/{$userName}.json");
     }
 
     /**
