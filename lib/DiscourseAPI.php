@@ -57,7 +57,12 @@ class DiscourseAPI
 
     private function _putRequest($reqString, $paramArray, $apiUser = 'system')
     {
-        return $this->_putpostRequest($reqString, $paramArray, $apiUser, true);
+        return $this->_putpostRequest($reqString, $paramArray, $apiUser, 'PUT');
+    }
+
+    private function _deleteRequest($reqString, $paramArray = array(), $apiUser = 'system')
+    {
+        return $this->_putpostRequest($reqString, $paramArray, $apiUser, 'DELETE');
     }
 
     private function _postRequest($reqString, $paramArray, $apiUser = 'system')
@@ -65,7 +70,7 @@ class DiscourseAPI
         return $this->_putpostRequest($reqString, $paramArray, $apiUser, false);
     }
 
-    private function _putpostRequest($reqString, $paramArray, $apiUser = 'system', $putMethod = false)
+    private function _putpostRequest($reqString, $paramArray, $apiUser = 'system', $method = false)
     {
         $ch = curl_init();
         $url = sprintf(
@@ -79,8 +84,8 @@ class DiscourseAPI
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($paramArray));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        if ($putMethod) {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        if ($method) {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         }
         $body = curl_exec($ch);
         $rc = curl_getinfo($ch, CURLINFO_HTTP_CODE);
